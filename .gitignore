@@ -1,23 +1,44 @@
+# =====================
 # Python
+# =====================
 __pycache__/
 *.py[cod]
 
-# Virtual env
+# =====================
+# Virtual environment
+# =====================
 venv/
+.venv/
 .env/
 
+# =====================
 # Jupyter
+# =====================
 .ipynb_checkpoints/
 
-# Data
-data/
+# =====================
+# Data (DVC)
+# =====================
+data/*
+!data/raw/
+!data/raw/.gitignore
+!data/raw/*.dvc
+!data/prepared/
+!data/prepared/.gitignore
+!data/prepared/*.dvc
 
+# =====================
 # MLflow
+# =====================
 mlruns/
 
+# =====================
 # Models
+# =====================
 models/
 
+# =====================
 # OS
+# =====================
 .DS_Store
 Thumbs.db

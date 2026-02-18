@@ -1,0 +1,23 @@
+# Python
+__pycache__/
+*.py[cod]
+
+# Virtual env
+venv/
+.env/
+
+# Jupyter
+.ipynb_checkpoints/
+
+# Data
+data/
+
+# MLflow
+mlruns/
+
+# Models
+models/
+
+# OS
+.DS_Store
+Thumbs.db

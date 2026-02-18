@@ -1,0 +1,14 @@
+stages:
+  prepare:
+    cmd: python src/prepare.py data/raw/spotify.csv data/prepared
+    deps:
+      - data/raw/spotify.csv
+      - src/prepare.py
+    outs:
+      - data/prepared
+
+  train:
+    cmd: python src/train.py data/prepared
+    deps:
+      - data/prepared
+      - src/train.py

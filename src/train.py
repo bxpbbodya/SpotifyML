@@ -6,58 +6,45 @@ import mlflow
 import mlflow.sklearn
 import matplotlib.pyplot as plt
 
-from sklearn.model_selection import train_test_split
 from sklearn.metrics import mean_squared_error, r2_score
 from sklearn.ensemble import RandomForestRegressor
 
 
-def main(args):
+def main(data_dir, n_estimators, max_depth):
 
-    # === Load dataset ===
-    df = pd.read_csv(args.data_path)
+    # === Load prepared data ===
+    train_path = os.path.join(data_dir, "train.csv")
+    test_path = os.path.join(data_dir, "test.csv")
 
-    # === Drop non-numeric / useless columns ===
-    df = df.drop(columns=[
-        "index",
-        "track_id",
-        "artists",
-        "album_name",
-        "track_name"
-    ], errors="ignore")
+    df_train = pd.read_csv(train_path)
+    df_test = pd.read_csv(test_path)
 
-    # Encode genre
-    df = pd.get_dummies(df, columns=["track_genre"], drop_first=True)
+    X_train = df_train.drop(columns=["popularity"])
+    y_train = df_train["popularity"]
 
-    # Convert boolean
-    df["explicit"] = df["explicit"].astype(int)
-
-    # Handle missing values
-    df = df.fillna(df.mean(numeric_only=True))
-
-    # === Split features / target ===
-    X = df.drop(columns=["popularity"])
-    y = df["popularity"]
-
-    X_train, X_test, y_train, y_test = train_test_split(
-        X, y, test_size=0.2, random_state=42
-    )
+    X_test = df_test.drop(columns=["popularity"])
+    y_test = df_test["popularity"]
 
     # === Model ===
     model = RandomForestRegressor(
-        n_estimators=args.n_estimators,
-        max_depth=args.max_depth,
-        random_state=42
+        n_estimators=n_estimators,
+        max_depth=max_depth,
+        random_state=42,
+        n_jobs=-1
     )
 
-    mlflow.set_experiment("Spotify_Popularity_Regression")
+    mlflow.set_experiment("Spotify_Popularity_DVC")
 
     with mlflow.start_run():
 
+        # === Train ===
         model.fit(X_train, y_train)
 
+        # === Predictions ===
         y_train_pred = model.predict(X_train)
         y_test_pred = model.predict(X_test)
 
+        # === Metrics ===
         rmse_train = np.sqrt(mean_squared_error(y_train, y_train_pred))
         rmse_test = np.sqrt(mean_squared_error(y_test, y_test_pred))
 
@@ -65,8 +52,8 @@ def main(args):
         r2_test = r2_score(y_test, y_test_pred)
 
         # === Log params ===
-        mlflow.log_param("n_estimators", args.n_estimators)
-        mlflow.log_param("max_depth", args.max_depth)
+        mlflow.log_param("n_estimators", n_estimators)
+        mlflow.log_param("max_depth", max_depth)
 
         # === Log metrics ===
         mlflow.log_metric("rmse_train", rmse_train)
@@ -77,19 +64,20 @@ def main(args):
         # === Tags ===
         mlflow.set_tag("author", "student")
         mlflow.set_tag("model_type", "RandomForestRegressor")
-        mlflow.set_tag("task", "regression")
+        mlflow.set_tag("pipeline_stage", "train")
 
         # === Feature Importance ===
         importances = model.feature_importances_
-        fi = pd.Series(importances, index=X.columns).sort_values(ascending=False)[:15]
-
-        plt.figure(figsize=(8,5))
-        fi.plot(kind="barh")
-        plt.title("Top 15 Feature Importances")
-        plt.tight_layout()
+        fi = pd.Series(importances, index=X_train.columns)\
+               .sort_values(ascending=False)[:15]
 
         os.makedirs("artifacts", exist_ok=True)
         fi_path = "artifacts/feature_importance.png"
+
+        plt.figure(figsize=(8, 5))
+        fi.plot(kind="barh")
+        plt.title("Top 15 Feature Importances")
+        plt.tight_layout()
         plt.savefig(fi_path)
         plt.close()
 
@@ -98,15 +86,18 @@ def main(args):
         # === Log model ===
         mlflow.sklearn.log_model(model, "model")
 
+        print(f"RMSE train: {rmse_train:.4f}")
         print(f"RMSE test: {rmse_test:.4f}")
+        print(f"R2 train: {r2_train:.4f}")
         print(f"R2 test: {r2_test:.4f}")
 
 
 if __name__ == "__main__":
     parser = argparse.ArgumentParser()
-    parser.add_argument("--data_path", type=str, default="data/dataset.csv")
+    parser.add_argument("data_dir", help="Path to prepared data directory")
     parser.add_argument("--n_estimators", type=int, default=100)
     parser.add_argument("--max_depth", type=int, default=None)
 
     args = parser.parse_args()
-    main(args)
+
+    main(args.data_dir, args.n_estimators, args.max_depth)

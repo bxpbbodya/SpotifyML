@@ -1,0 +1,31 @@
+schema: '2.0'
+stages:
+  prepare:
+    cmd: python src/prepare.py data/raw/spotify.csv data/prepared
+    deps:
+    - path: data/raw/spotify.csv
+      hash: md5
+      md5: 81c4699d70ecf480cda0081759db853a
+      size: 20118249
+    - path: src/prepare.py
+      hash: md5
+      md5: a3df119651bd130f662e33de1ed9a418
+      size: 1144
+    outs:
+    - path: data/prepared
+      hash: md5
+      md5: 52a3b02111dad725bbe022992e48d4dd.dir
+      size: 85989740
+      nfiles: 2
+  train:
+    cmd: python src/train.py data/prepared
+    deps:
+    - path: data/prepared
+      hash: md5
+      md5: 52a3b02111dad725bbe022992e48d4dd.dir
+      size: 85989740
+      nfiles: 2
+    - path: src/train.py
+      hash: md5
+      md5: 29993525ec783fdac219cb5297dadb67
+      size: 3171

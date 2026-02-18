@@ -16,6 +16,8 @@ def main(data_dir, n_estimators, max_depth):
     train_path = os.path.join(data_dir, "train.csv")
     test_path = os.path.join(data_dir, "test.csv")
 
+    print("Training started...")
+
     df_train = pd.read_csv(train_path)
     df_test = pd.read_csv(test_path)
 

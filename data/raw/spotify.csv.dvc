@@ -1,0 +1,5 @@
+outs:
+- md5: 81c4699d70ecf480cda0081759db853a
+  size: 20118249
+  hash: md5
+  path: spotify.csv

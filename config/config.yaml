@@ -1,0 +1,29 @@
+seed: 42
+
+data:
+  train_path: data/prepared/train.csv
+
+model:
+  type: random_forest
+
+hpo:
+  n_trials: 20
+  sampler: tpe
+  metric: rmse
+  direction: minimize
+
+search_space:
+  n_estimators:
+    low: 50
+    high: 300
+  max_depth:
+    low: 5
+    high: 20
+
+mlflow:
+  experiment_name: Spotify_HPO
+
+hydra:
+  run:
+    dir: .
+  output_subdir: null

@@ -1,11 +1,14 @@
 import os
 import json
 
+
 def test_model_exists():
     assert os.path.exists("models/model.pkl"), "Model not saved"
 
+
 def test_metrics_exists():
     assert os.path.exists("metrics.json"), "metrics.json not found"
+
 
 def test_quality_gate():
     with open("metrics.json") as f:

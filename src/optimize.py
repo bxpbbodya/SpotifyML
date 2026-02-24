@@ -30,7 +30,6 @@ def load_data(path: str):
     )
 
 
-
 def objective_factory(cfg, X_train, X_val, y_train, y_val):
 
     def objective(trial: optuna.Trial):

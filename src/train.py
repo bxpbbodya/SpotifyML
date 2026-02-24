@@ -86,7 +86,6 @@ def main(data_dir, n_estimators, max_depth):
         mlflow.log_artifact(fi_path)
 
         import json
-        from sklearn.metrics import confusion_matrix
 
         # === Save model locally ===
         os.makedirs("models", exist_ok=True)

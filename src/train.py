@@ -85,6 +85,27 @@ def main(data_dir, n_estimators, max_depth):
 
         mlflow.log_artifact(fi_path)
 
+        import json
+        from sklearn.metrics import confusion_matrix
+
+        # === Save model locally ===
+        os.makedirs("models", exist_ok=True)
+        model_path = "models/model.pkl"
+
+        import joblib
+        joblib.dump(model, model_path)
+
+        # === Save metrics.json ===
+        metrics = {
+            "rmse_train": rmse_train,
+            "rmse_test": rmse_test,
+            "r2_train": r2_train,
+            "r2_test": r2_test
+        }
+
+        with open("metrics.json", "w") as f:
+            json.dump(metrics, f, indent=4)
+
         # === Log model ===
         mlflow.sklearn.log_model(model, "model")
 

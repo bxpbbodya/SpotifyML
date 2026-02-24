@@ -1,0 +1,10 @@
+[flake8]
+exclude =
+    .git,
+    __pycache__,
+    .venv,
+    mlruns,
+    data,
+    artifacts,
+    models
+max-line-length = 100

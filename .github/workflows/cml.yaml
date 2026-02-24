@@ -20,12 +20,15 @@ jobs:
           python-version: 3.11
           cache: 'pip'
 
-      - run: pip install -r requirements.txt
+      - name: Install dependencies
+        run: |
+          pip install -r requirements.txt
+          pip install flake8 black cml
 
       - name: Lint
         run: |
-          flake8 .
-          black --check .
+          flake8 src tests
+          black --check src tests
 
       - name: Run pre-train tests
         run: python -m pytest tests/test_model.py
@@ -43,8 +46,9 @@ jobs:
           echo "## Model Metrics" > report.md
           cat metrics.json >> report.md
           cml comment create report.md
-          - name: Upload model
-            uses: actions/upload-artifact@v3
-            with:
-              name: trained-model
-              path: models/model.pkl
+
+      - name: Upload model
+        uses: actions/upload-artifact@v3
+        with:
+          name: trained-model
+          path: models/model.pkl

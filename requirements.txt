@@ -10,7 +10,6 @@ matplotlib
 pytest
 flake8
 black
-cml
 scipy
 seaborn
 pyyaml

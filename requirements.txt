@@ -2,7 +2,7 @@ optuna
 hydra-core
 omegaconf
 joblib
-mlflow
+mlflow==2.12.1
 scikit-learn
 pandas
 numpy
@@ -13,4 +13,3 @@ black
 scipy
 seaborn
 pyyaml
-dvc

@@ -27,7 +27,6 @@ jobs:
           python -m pip install --upgrade pip
           pip install setuptools==69.5.1
           pip install -r requirements.txt
-          pip install dvc
 
       - name: Lint
         run: |
@@ -42,6 +41,12 @@ jobs:
 
       - name: Run post-train tests
         run: python -m pytest tests/test_artifacts.py
+
+      - name: Setup CML
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y nodejs npm
+          npm install -g @dvcorg/cml
 
       - name: Generate CML report
         env:

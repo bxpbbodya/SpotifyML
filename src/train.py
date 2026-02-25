@@ -29,10 +29,7 @@ def main(data_dir, n_estimators, max_depth):
 
     # === Model ===
     model = RandomForestRegressor(
-        n_estimators=n_estimators,
-        max_depth=max_depth,
-        random_state=42,
-        n_jobs=-1
+        n_estimators=n_estimators, max_depth=max_depth, random_state=42, n_jobs=-1
     )
 
     mlflow.set_experiment("Spotify_Popularity_DVC")
@@ -70,8 +67,9 @@ def main(data_dir, n_estimators, max_depth):
 
         # === Feature Importance ===
         importances = model.feature_importances_
-        fi = pd.Series(importances, index=X_train.columns)\
-               .sort_values(ascending=False)[:15]
+        fi = pd.Series(importances, index=X_train.columns).sort_values(ascending=False)[
+            :15
+        ]
 
         os.makedirs("artifacts", exist_ok=True)
         fi_path = "artifacts/feature_importance.png"
@@ -92,6 +90,7 @@ def main(data_dir, n_estimators, max_depth):
         model_path = "models/model.pkl"
 
         import joblib
+
         joblib.dump(model, model_path)
 
         # === Save metrics.json ===
@@ -99,7 +98,7 @@ def main(data_dir, n_estimators, max_depth):
             "rmse_train": rmse_train,
             "rmse_test": rmse_test,
             "r2_train": r2_train,
-            "r2_test": r2_test
+            "r2_test": r2_test,
         }
 
         with open("metrics.json", "w") as f:

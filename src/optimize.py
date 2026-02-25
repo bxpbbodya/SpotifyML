@@ -25,9 +25,7 @@ def load_data(path: str):
     X = df.drop(columns=["popularity"])
     y = df["popularity"]
 
-    return train_test_split(
-        X, y, test_size=0.2, random_state=42
-    )
+    return train_test_split(X, y, test_size=0.2, random_state=42)
 
 
 def objective_factory(cfg, X_train, X_val, y_train, y_val):
@@ -38,12 +36,12 @@ def objective_factory(cfg, X_train, X_val, y_train, y_val):
             "n_estimators": trial.suggest_int(
                 "n_estimators",
                 cfg.search_space.n_estimators.low,
-                cfg.search_space.n_estimators.high
+                cfg.search_space.n_estimators.high,
             ),
             "max_depth": trial.suggest_int(
                 "max_depth",
                 cfg.search_space.max_depth.low,
-                cfg.search_space.max_depth.high
+                cfg.search_space.max_depth.high,
             ),
         }
 
@@ -53,10 +51,7 @@ def objective_factory(cfg, X_train, X_val, y_train, y_val):
             mlflow.set_tag("trial_number", trial.number)
             mlflow.set_tag("model_type", "RandomForestRegressor")
 
-            model = RandomForestRegressor(
-                random_state=cfg.seed,
-                **params
-            )
+            model = RandomForestRegressor(random_state=cfg.seed, **params)
 
             model.fit(X_train, y_train)
             preds = model.predict(X_val)
@@ -82,10 +77,7 @@ def main(cfg: DictConfig):
 
     with mlflow.start_run(run_name="HPO_Study"):
 
-        study = optuna.create_study(
-            direction=cfg.hpo.direction,
-            sampler=sampler
-        )
+        study = optuna.create_study(direction=cfg.hpo.direction, sampler=sampler)
 
         objective = objective_factory(cfg, X_train, X_val, y_train, y_val)
         study.optimize(objective, n_trials=cfg.hpo.n_trials)
@@ -93,10 +85,7 @@ def main(cfg: DictConfig):
         best_params = study.best_trial.params
         mlflow.log_dict(best_params, "best_params.json")
 
-        best_model = RandomForestRegressor(
-            random_state=cfg.seed,
-            **best_params
-        )
+        best_model = RandomForestRegressor(random_state=cfg.seed, **best_params)
         best_model.fit(X_train, y_train)
 
         os.makedirs("models", exist_ok=True)

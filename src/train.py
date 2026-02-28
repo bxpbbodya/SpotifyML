@@ -15,9 +15,11 @@ from sklearn.ensemble import RandomForestRegressor
 
 def get_git_commit():
     try:
-        return subprocess.check_output(
-            ["git", "rev-parse", "HEAD"]
-        ).decode("utf-8").strip()
+        return (
+            subprocess.check_output(["git", "rev-parse", "HEAD"])
+            .decode("utf-8")
+            .strip()
+        )
     except Exception:
         return "unknown"
 
@@ -39,10 +41,7 @@ def main(data_dir, n_estimators, max_depth, seed):
     y_test = df_test["popularity"]
 
     model = RandomForestRegressor(
-        n_estimators=n_estimators,
-        max_depth=max_depth,
-        random_state=seed,
-        n_jobs=-1
+        n_estimators=n_estimators, max_depth=max_depth, random_state=seed, n_jobs=-1
     )
 
     mlflow.set_experiment("Spotify_Popularity_DVC")
@@ -87,9 +86,7 @@ def main(data_dir, n_estimators, max_depth, seed):
         mlflow.log_artifact("metrics.json")
 
         mlflow.sklearn.log_model(
-            model,
-            artifact_path="model",
-            registered_model_name="SpotifyModel"
+            model, artifact_path="model", registered_model_name="SpotifyModel"
         )
 
         print(metrics)
@@ -97,9 +94,7 @@ def main(data_dir, n_estimators, max_depth, seed):
         from sklearn.metrics import ConfusionMatrixDisplay
 
         # після predictions
-        ConfusionMatrixDisplay.from_predictions(
-            y_test, y_test_pred.round()
-        )
+        ConfusionMatrixDisplay.from_predictions(y_test, y_test_pred.round())
 
         os.makedirs("artifacts", exist_ok=True)
         plt.savefig("artifacts/confusion_matrix.png")

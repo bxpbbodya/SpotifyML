@@ -95,7 +95,6 @@ def main(data_dir, n_estimators, max_depth, seed):
         print(metrics)
 
         from sklearn.metrics import ConfusionMatrixDisplay
-        import matplotlib.pyplot as plt
 
         # після predictions
         ConfusionMatrixDisplay.from_predictions(
@@ -119,4 +118,3 @@ if __name__ == "__main__":
     args = parser.parse_args()
 
     main(args.data_dir, args.n_estimators, args.max_depth, args.seed)
-

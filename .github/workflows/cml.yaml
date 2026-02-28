@@ -36,11 +36,25 @@ jobs:
       - name: Run pre-train tests
         run: python -m pytest tests/test_model.py
 
+      - name: Install Airflow for DAG test
+        run: pip install apache-airflow==2.8.1
+
+      - name: Test DAG integrity
+        run: |
+          python - <<EOF
+          from airflow.models import DagBag
+          dag_bag = DagBag(dag_folder='dags/', include_examples=False)
+          assert len(dag_bag.import_errors) == 0, f"DAG import errors: {dag_bag.import_errors}"
+          EOF
+
       - name: Train model
         run: python src/train.py data/prepared
 
       - name: Run post-train tests
         run: python -m pytest tests/test_artifacts.py
+
+      - name: Build Docker image
+        run: docker build -t ml-project .
 
       - name: Setup CML
         run: |
